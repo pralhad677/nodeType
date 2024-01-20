@@ -9,4 +9,5 @@ const index_1 = __importDefault(require("../controller/index"));
 const index_2 = __importDefault(require("../middleware/index"));
 const router = express_1.default.Router();
 router.get('/sample', index_2.default, index_1.default.getSampleData);
+router.post('/user', index_2.default, index_1.default.createUser);
 exports.default = router;
