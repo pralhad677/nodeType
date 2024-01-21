@@ -7,6 +7,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const index_1 = __importDefault(require("./router/index"));
 const mongoose_1 = __importDefault(require("mongoose"));
+const role_1 = __importDefault(require("./db/role"));
+const permission_1 = __importDefault(require("./db/permission"));
 const uri = 'mongodb://localhost:27017/practice';
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
@@ -16,9 +18,33 @@ app.use(express_1.default.json());
 // Use the sample route
 app.use('/api', index_1.default);
 app.use('/create', index_1.default);
-console.log(1);
-console.log(1);
-mongoose_1.default.connect(uri, options);
+app.use('/auth', index_1.default);
+// mongoose.connect(uri, options);
+async function seedDatabase() {
+    try {
+        await mongoose_1.default.connect(uri, {});
+        const hasSeededData = await role_1.default.findOne({ name: 'admin' });
+        if (hasSeededData) {
+            console.log('Database already seeded. Skipping.');
+            return;
+        }
+        // Seed default roles
+        const adminRole = await role_1.default.create({ name: 'admin', permissions: ['read', 'write', 'delete'] });
+        const userRole = await role_1.default.create({ name: 'user', permissions: ['read'] });
+        // Seed default permissions
+        await permission_1.default.create({ name: 'read' });
+        await permission_1.default.create({ name: 'write' });
+        await permission_1.default.create({ name: 'delete' });
+        console.log('Database seeded successfully');
+    }
+    catch (error) {
+        console.error('Error during database seeding:', error);
+    }
+    finally {
+        // mongoose.disconnect();
+    }
+}
+seedDatabase();
 const db = mongoose_1.default.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 db.once('open', () => {
