@@ -1,12 +1,38 @@
 import { Request, Response } from 'express';
 import UserModel from '../db/index';
+import RoleModel from '../db/role'
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
  
 export const signUp =async(req:Request,res: Response) =>{
     try {
-        const { username, password, roles } = req.body;
+        const { username, password, role } = req.body;
+        const defaultRole = await RoleModel.findOne({ name: role || 'user' });
+        const existingDocument = await UserModel.countDocuments( );
+        console.log('existingDocument',existingDocument)
+        if(existingDocument > 0){
+          const allData = await UserModel.find();
+        
+          for(let document of allData){ 
+            const user = await UserModel.findById(document._id).populate('roles'); 
+            let AdminArray:string[] = user?.roles.filter(role=>(role as any).name === 'admin') as string[]
+    console.log('adminArray',AdminArray)
+            if(AdminArray.length === 1){
+              if(role === undefined){
+                  console.log('not admin')
+              }else{
+
+                res.status(403).json({error:"Two admin is not possible"})
+                return 
+              }
+            } 
+          } 
+        }
+        console.log('defaultRole',defaultRole)
+        if (!defaultRole) {
+          return res.status(500).json({ error: 'Default role not found.' });
+        }
         console.log(password)
     
         // Check if the user already exists
@@ -21,11 +47,17 @@ export const signUp =async(req:Request,res: Response) =>{
     
         // Create a new user
         const newUser = await UserModel.create({
-          username,
+          username, 
           password: hashedPassword,
-          roles,
-        });
+          roles:[defaultRole._id]
+        }); 
     console.log('signup',newUser)
+    
+    const user = await UserModel.findById(newUser._id).populate('roles');
+
+    // const user1 = await UserModel.findById(newUser._id).populate('roles').populate('permissions');
+        console.log(user)
+        // console.log(user1)
         return res.status(201).json({ message: 'User registered successfully', user: newUser });
       } catch (error) {
         console.error('Error during signup:', error);
@@ -38,14 +70,26 @@ export const login = async (req: Request, res: Response) => {
     
         // Find the user by username
         const user = await UserModel.findOne({ username });
-        console.log(username,password);
-        console.log(user)
+    
         if (!user) {
           return res.status(401).json({ error: 'Invalid username' });
         }
      
-       console.log(password)
-        const passwordMatch =  await bcrypt.compare(password,user.password);
+      //  console.log(password)
+      //  async function comparePasswords(plainPassword: string, hashedPassword: string): Promise<boolean> {
+      //   return   bcrypt.compare(plainPassword, hashedPassword);
+      // }
+
+      // const hashedPassword = await bcrypt.hash(password, 10);
+      // const isMatch = await comparePasswords(password, hashedPassword);
+      // console.log('Passwords Match:', isMatch);    
+      // console.log(typeof password)  
+      // console.log(typeof user.password)
+      // bcrypt.compare(password,user.password).then(x=>{
+      //   console.log('istrue',x)
+         
+      // });
+        const passwordMatch =      bcrypt.compareSync(password,user.password); // add await 
     
         if (!passwordMatch) {
           return res.status(401).json({ error: 'Invalid password' });

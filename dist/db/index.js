@@ -9,7 +9,7 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const userSchema = new mongoose_1.Schema({
     username: { type: String, required: true },
     password: { type: String, required: true },
-    roles: [String],
+    roles: [{ type: mongoose_1.Schema.Types.ObjectId, ref: 'Role', required: true }],
 });
 userSchema.pre('save', async function (next) {
     if (this.isModified('password') || this.isNew) {

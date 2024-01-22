@@ -5,7 +5,7 @@ export interface IPermission extends Document {
 }
 
 const PermissionSchema = new Schema({
-  name: String,
+  name: { type: String, required: true, unique: true },
 });
 
 export default mongoose.model<IPermission>('Permission', PermissionSchema);

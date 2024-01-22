@@ -5,7 +5,7 @@ import sampleController from '../controller/index'
 import sampleMiddleware  from '../middleware/index';
 import { login, signUp } from '../controller/AuthControler';
 
-import { authorize } from '../middleware/authmiddleware';
+import { authenticate, authorize } from '../middleware/authmiddleware';
 
 const router = express.Router();
 
@@ -13,12 +13,18 @@ const router = express.Router();
 // router.post('/user',sampleMiddleware,sampleController.createUser);
 router.post('/signup', signUp);
 router.post('/login', login);
-
-router.get('/protected', async( )=>{
-
-await authorize(['read', 'write']), (req: any, res: { json: (arg0: { message: string; }) => void; }) => {
+let id = '65acf568aa819127f065b29a'
+router.get('/protected',   authenticate,
+// async( )=>{
+ 
+// await authorize(['read', 'write']) 
+  authorize(['read','write'])
+ , (req: any, res: { json: (arg0: { message: string; }) => void; }) => {
+  
     res.json({ message: 'This route requires read and write permissions.' });
 }
-  });
+  // }
+  );
 
 export default router;
+ 

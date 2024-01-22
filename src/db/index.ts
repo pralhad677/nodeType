@@ -13,7 +13,7 @@ interface IUser extends Document {
 const userSchema = new Schema<IUser>({
   username: { type: String, required: true }, 
   password: { type: String, required: true },
-  roles: [String],
+  roles: [{ type: Schema.Types.ObjectId, ref: 'Role', required: true }], 
 });
 userSchema.pre<IUser>('save', async function (next) {
   if (this.isModified('password') || this.isNew) {

@@ -6,6 +6,7 @@ import mongoose, { ConnectOptions } from 'mongoose';
 import RoleModel from './db/role'
 
 import PermissionModel from './db/permission'
+import { checkUserRole } from './middleware/authmiddleware';
 const uri: string = 'mongodb://localhost:27017/practice'
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -18,11 +19,12 @@ const options: ConnectOptions = {
 
 // Apply middleware globally
 app.use(express.json());
-
+ 
 // Use the sample route
-app.use('/api', sampleRoute); 
-app.use('/create',sampleRoute)
-app.use('/auth', sampleRoute);
+// app.use('/api', sampleRoute); 
+// app.use('/create',sampleRoute)
+app.use('/user/auth' ,sampleRoute);
+app.use('/admin/auth',checkUserRole('admin'),sampleRoute)
  
  
 // mongoose.connect(uri, options);
@@ -44,14 +46,16 @@ async function seedDatabase() {
 
   // Seed default roles
   const adminRole = await RoleModel.create({ name: 'admin', permissions: ['read', 'write', 'delete'] });
-  const userRole = await RoleModel.create({ name: 'user', permissions: ['read'] });
+  const userRole = await RoleModel.create({ name: 'user', permissions: ['read' ] });
+
+  
 
   // Seed default permissions
   await PermissionModel.create({ name: 'read' });
-  await PermissionModel.create({ name: 'write' });
+  await PermissionModel.create({ name: 'write' }); 
   await PermissionModel.create({ name: 'delete' });
 
-  console.log('Database seeded successfully');
+  console.log('Database seeded successfully'); 
 }catch(error){
   console.error('Error during database seeding:', error);
 }

@@ -9,6 +9,7 @@ const index_1 = __importDefault(require("./router/index"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const role_1 = __importDefault(require("./db/role"));
 const permission_1 = __importDefault(require("./db/permission"));
+const authmiddleware_1 = require("./middleware/authmiddleware");
 const uri = 'mongodb://localhost:27017/practice';
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
@@ -16,9 +17,10 @@ const options = {};
 // Apply middleware globally
 app.use(express_1.default.json());
 // Use the sample route
-app.use('/api', index_1.default);
-app.use('/create', index_1.default);
-app.use('/auth', index_1.default);
+// app.use('/api', sampleRoute); 
+// app.use('/create',sampleRoute)
+app.use('/user/auth', index_1.default);
+app.use('/admin/auth', (0, authmiddleware_1.checkUserRole)('admin'), index_1.default);
 // mongoose.connect(uri, options);
 async function seedDatabase() {
     try {
