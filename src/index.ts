@@ -40,13 +40,13 @@ async function seedDatabase() {
 
   if (hasSeededData) {
     console.log('Database already seeded. Skipping.'); 
-    return;
+    return; 
   }
 
 
   // Seed default roles
   const adminRole = await RoleModel.create({ name: 'admin', permissions: ['read', 'write', 'delete'] });
-  const userRole = await RoleModel.create({ name: 'user', permissions: ['read' ] });
+  const userRole = await RoleModel.create({ name: 'user', permissions: ['read','write' ] });
 
   
 

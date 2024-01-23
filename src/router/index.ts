@@ -12,8 +12,7 @@ const router = express.Router();
 // router.get('/sample', sampleMiddleware, sampleController.getSampleData);
 // router.post('/user',sampleMiddleware,sampleController.createUser);
 router.post('/signup', signUp);
-router.post('/login', login);
-let id = '65acf568aa819127f065b29a'
+router.post('/login', login); 
 router.get('/protected',   authenticate,
 // async( )=>{
  

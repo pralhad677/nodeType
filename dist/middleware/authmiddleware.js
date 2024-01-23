@@ -23,18 +23,36 @@ function authorize(permissions) {
             if (!user) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
-            const userPermissions = await user.roles.reduce(async (accPromise, roleName) => {
+            let rolesOfUser = await index_1.default.findById(user._id).populate('roles');
+            console.log('rolesOfUser', rolesOfUser);
+            // console.log(user.roles.populate())
+            // const userPermissions = await user.roles.reduce(async (accPromise, roleName) => {
+            //     const acc = await accPromise;
+            //     const role = await RoleModel.findOne({ name: roleName });
+            //     if (role) {
+            //       return [...acc, ...role.permissions];
+            //     }
+            //     return acc;
+            //   }, Promise.resolve([] as string[]));
+            const userPermissions = await rolesOfUser?.roles.reduce(async (accPromise, roleName) => {
                 const acc = await accPromise;
-                const role = await role_1.default.findOne({ name: roleName });
+                const role = await role_1.default.findOne({ name: roleName.name });
+                console.log('role', role);
                 if (role) {
                     return [...acc, ...role.permissions];
                 }
                 return acc;
             }, Promise.resolve([]));
-            const hasPermission = permissions.every((permission) => userPermissions.includes(permission));
+            console.log('userPermission', userPermissions);
+            const hasPermission = permissions.every((permission) => userPermissions?.includes(permission));
+            console.log('hasPermission', hasPermission);
             if (!hasPermission) {
                 return res.status(403).json({ error: 'Forbidden' });
             }
+            else if (userPermissions?.includes("delete")) {
+                return res.status(200).json({ message: "admin:you are allowed" });
+            }
+            return res.status(200).json({ message: "user:you are allowed" });
             next();
         }
         catch (error) {

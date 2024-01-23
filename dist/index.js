@@ -32,7 +32,7 @@ async function seedDatabase() {
         }
         // Seed default roles
         const adminRole = await role_1.default.create({ name: 'admin', permissions: ['read', 'write', 'delete'] });
-        const userRole = await role_1.default.create({ name: 'user', permissions: ['read'] });
+        const userRole = await role_1.default.create({ name: 'user', permissions: ['read', 'write'] });
         // Seed default permissions
         await permission_1.default.create({ name: 'read' });
         await permission_1.default.create({ name: 'write' });

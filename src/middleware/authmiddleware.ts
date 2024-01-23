@@ -21,25 +21,39 @@ export   function authorize(permissions: string[]) {
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
+    let rolesOfUser = await UserModel.findById(user._id).populate('roles');
+    console.log('rolesOfUser',rolesOfUser)
+    // console.log(user.roles.populate())
+    // const userPermissions = await user.roles.reduce(async (accPromise, roleName) => {
+    //     const acc = await accPromise;
+    //     const role = await RoleModel.findOne({ name: roleName });
+    //     if (role) {
+    //       return [...acc, ...role.permissions];
+    //     }
+    //     return acc;
+    //   }, Promise.resolve([] as string[]));
     
-
-    
-    const userPermissions = await user.roles.reduce(async (accPromise, roleName) => {
+      const userPermissions = await rolesOfUser?.roles.reduce(async (accPromise, roleName) => {
         const acc = await accPromise;
-        const role = await RoleModel.findOne({ name: roleName });
+        const role = await RoleModel.findOne({ name: (roleName as any).name });
+        console.log('role',role);
         if (role) {
           return [...acc, ...role.permissions];
         }
         return acc;
       }, Promise.resolve([] as string[]));
-    
-
-    const hasPermission = permissions.every((permission) => userPermissions.includes(permission));
-
+    console.log('userPermission',userPermissions)
+    const hasPermission = permissions.every((permission) => userPermissions?.includes(permission));
+        console.log('hasPermission',hasPermission)
     if (!hasPermission) {
       return res.status(403).json({ error: 'Forbidden' });
     }
-     
+    else if(userPermissions?.includes("delete")){
+
+      return res.status(200).json({message:"admin:you are allowed"});
+    }
+
+    return res.status(200).json({message:"user:you are allowed"});
     next();
   }catch(error){
     console.log('error:',error)

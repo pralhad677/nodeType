@@ -12,7 +12,6 @@ const router = express_1.default.Router();
 // router.post('/user',sampleMiddleware,sampleController.createUser);
 router.post('/signup', AuthControler_1.signUp);
 router.post('/login', AuthControler_1.login);
-let id = '65acf568aa819127f065b29a';
 router.get('/protected', authmiddleware_1.authenticate, 
 // async( )=>{
 // await authorize(['read', 'write']) 
