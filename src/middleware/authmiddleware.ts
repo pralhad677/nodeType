@@ -78,11 +78,14 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
   }
 
   try {
-    const decoded = jwt.verify(token, 'your-secret-key');
+    const secretKey = process.env.SECRET_KEY || 'ypur secret ket';
+    console.log('secretKey',secretKey);
+    const decoded = jwt.verify(token, secretKey as string);
     console.log('decoded',decoded);
     (req as any).user = decoded;
     next();
   } catch (error) {
+    console.log('error',error)
     res.status(401).json({ error: 'Unauthorized' });
   }
 };

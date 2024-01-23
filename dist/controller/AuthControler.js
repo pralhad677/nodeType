@@ -83,7 +83,10 @@ const login = async (req, res) => {
             return res.status(401).json({ error: 'Invalid password' });
         }
         // Generate a JWT token for authentication
-        const token = jsonwebtoken_1.default.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
+        const secretKey = process.env.SECRET_KEY || 'ypur secret ket';
+        console.log('secretKey', secretKey);
+        const token = jsonwebtoken_1.default.sign({ userId: user._id }, secretKey, { expiresIn: '1h' });
+        // const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
         return res.status(200).json({ message: 'Login successful', token });
     }
     catch (error) {

@@ -4,7 +4,7 @@ import sampleRoute from './router/index';
 import mongoose, { ConnectOptions } from 'mongoose';
 
 import RoleModel from './db/role'
-
+import * as dotenv from 'dotenv';
 import PermissionModel from './db/permission'
 import { checkUserRole } from './middleware/authmiddleware';
 const uri: string = 'mongodb://localhost:27017/practice'
@@ -16,7 +16,9 @@ const options: ConnectOptions = {
 };
 
 
-
+dotenv.config(); 
+// require('dotenv').config({path: './configs/global.env'});
+// console.log(process.env.SECRET_KEY) 
 // Apply middleware globally
 app.use(express.json());
  

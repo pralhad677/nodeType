@@ -77,12 +77,15 @@ const authenticate = async (req, res, next) => {
         return res.status(401).json({ error: 'Unauthorized!token invalid' });
     }
     try {
-        const decoded = jsonwebtoken_1.default.verify(token, 'your-secret-key');
+        const secretKey = process.env.SECRET_KEY || 'ypur secret ket';
+        console.log('secretKey', secretKey);
+        const decoded = jsonwebtoken_1.default.verify(token, secretKey);
         console.log('decoded', decoded);
         req.user = decoded;
         next();
     }
     catch (error) {
+        console.log('error', error);
         res.status(401).json({ error: 'Unauthorized' });
     }
 };

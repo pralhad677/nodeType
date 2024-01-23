@@ -92,7 +92,11 @@ export const login = async (req: Request, res: Response) => {
         }
     
         // Generate a JWT token for authentication
-        const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
+        const secretKey = process.env.SECRET_KEY || 'ypur secret ket';
+        console.log('secretKey',secretKey);
+        const token = jwt.sign({ userId: user._id }, secretKey as string, { expiresIn: '1h' });
+
+        // const token = jwt.sign({ userId: user._id }, 'your-secret-key', { expiresIn: '1h' });
      
         return res.status(200).json({ message: 'Login successful', token });
       } catch (error) {
