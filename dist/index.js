@@ -21,6 +21,7 @@ app.use(express_1.default.json());
 // app.use('/create',sampleRoute)
 app.use('/user/auth', index_1.default);
 app.use('/admin/auth', (0, authmiddleware_1.checkUserRole)('admin'), index_1.default);
+// app.post('/api/write', 
 // mongoose.connect(uri, options);
 async function seedDatabase() {
     try {

@@ -25,6 +25,7 @@ app.use(express.json());
 // app.use('/create',sampleRoute)
 app.use('/user/auth' ,sampleRoute);
 app.use('/admin/auth',checkUserRole('admin'),sampleRoute)
+// app.post('/api/write', 
  
  
 // mongoose.connect(uri, options);

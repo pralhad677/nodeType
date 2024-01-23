@@ -85,8 +85,8 @@ export const login = async (req: Request, res: Response) => {
           return res.status(401).json({ error: 'Invalid username' });
         }
    
-        const passwordMatch =      bcrypt.compareSync(password,user.password); // add await 
-    
+        const passwordMatch =     bcrypt.compare(password,user.password); // add await 
+        console.log('passwordMatch',passwordMatch)
         if (!passwordMatch) {
           return res.status(401).json({ error: 'Invalid password' });
         }

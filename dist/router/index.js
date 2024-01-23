@@ -12,10 +12,7 @@ const router = express_1.default.Router();
 // router.post('/user',sampleMiddleware,sampleController.createUser);
 router.post('/signup', AuthControler_1.signUp);
 router.post('/login', AuthControler_1.login);
-router.get('/protected', authmiddleware_1.authenticate, 
-// async( )=>{
-// await authorize(['read', 'write']) 
-(0, authmiddleware_1.authorize)(['read', 'write']), (req, res) => {
+router.get('/protected', authmiddleware_1.authenticate, (0, authmiddleware_1.authorize)(['read', 'write']), (req, res) => {
     res.json({ message: 'This route requires read and write permissions.' });
 }
 // }

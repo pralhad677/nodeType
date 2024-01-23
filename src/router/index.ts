@@ -14,9 +14,7 @@ const router = express.Router();
 router.post('/signup', signUp);
 router.post('/login', login); 
 router.get('/protected',   authenticate,
-// async( )=>{
- 
-// await authorize(['read', 'write']) 
+  
   authorize(['read','write'])
  , (req: any, res: { json: (arg0: { message: string; }) => void; }) => {
   

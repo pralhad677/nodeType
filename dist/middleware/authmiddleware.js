@@ -6,19 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkUserRole = exports.authenticate = exports.authorize = void 0;
 const index_1 = __importDefault(require("../db/index"));
 const role_1 = __importDefault(require("../db/role"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 function authorize(permissions) {
     console.log('authorize');
     return async (req, res, next) => {
         try {
             console.log('inner');
-            console.log(req.query.id);
-            const userId = req.user.id; // Assuming you have middleware to attach user information to the request
+            const userId = req.user.userId; // Assuming you have middleware to attach user information to the request
+            console.log('userId :', userId);
             // console.log(typeof userId)
             // console.log(userId)
             // console.log(userId ==='65acf568aa819127f065b29a')
             // let id = new mongoose.Types.ObjectId('65acf568aa819127f065b29a');
             // console.log('id',id)
-            const user = await index_1.default.findById(req.query.id);
+            const user = await index_1.default.findById(userId);
             console.log('user', user);
             if (!user) {
                 return res.status(401).json({ error: 'Unauthorized' });
@@ -61,13 +62,30 @@ function authorize(permissions) {
     };
 }
 exports.authorize = authorize;
-function authenticate(req, res, next) {
-    // Perform your authentication logic, e.g., checking tokens or session
-    // After successful authentication, attach user information to the request
-    req.user = { id: req.query.id }; // Replace this with your actual user object
-    console.log('abc', req.user.id);
-    next();
-}
+// export function authenticate(req: Request, res: Response, next: NextFunction) {
+//   // Perform your authentication logic, e.g., checking tokens or session
+//   // After successful authentication, attach user information to the request
+//   (req as any).user = { id: req.query.id}; // Replace this with your actual user object
+//   console.log('abc',(req as any).user.id)
+//   next();
+// }
+const authenticate = async (req, res, next) => {
+    // console.log(req.headers.authorization)
+    const token = req.headers.authorization?.split(' ')[1];
+    console.log('token', token);
+    if (token === undefined) {
+        return res.status(401).json({ error: 'Unauthorized!token invalid' });
+    }
+    try {
+        const decoded = jsonwebtoken_1.default.verify(token, 'your-secret-key');
+        console.log('decoded', decoded);
+        req.user = decoded;
+        next();
+    }
+    catch (error) {
+        res.status(401).json({ error: 'Unauthorized' });
+    }
+};
 exports.authenticate = authenticate;
 const checkUserRole = (requiredRole) => {
     return (req, res, next) => {
